@@ -1,0 +1,170 @@
+<div class="admin-kandidaten">
+  <h1>Kandidaten & Toegangscodes</h1>
+
+  <% if (locals.error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+  <% if (locals.success) { %>
+    <div class="alert alert-success"><%= success %></div>
+  <% } %>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="toewijzen">Toewijzen aan Examen</button>
+    <button class="tab-btn" data-tab="aanmaken">Nieuwe Kandidaat</button>
+    <button class="tab-btn" data-tab="overzicht">Alle Kandidaten</button>
+  </div>
+
+  <!-- TAB 1: Toewijzen -->
+  <div id="tab-toewijzen" class="tab-content active">
+    <div class="toewijzen-form">
+      <h2>Kandidaat toewijzen aan examen</h2>
+      <form action="/admin/kandidaat/toewijzen" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Kandidaat *</label>
+            <select name="kandidaat_id" required>
+              <option value="">Selecteer...</option>
+              <% beschikbareKandidaten.forEach(k => { %>
+                <option value="<%= k.id %>"><%= k.naam %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Examen *</label>
+            <select name="examen_id" required>
+              <option value="">Selecteer...</option>
+              <% beschikbareExamens.forEach(e => { %>
+                <option value="<%= e.id %>"><%= e.titel %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tijdslimiet (min, optioneel)</label>
+            <input type="number" name="tijdlimiet" placeholder="Standaard">
+          </div>
+          <div class="form-group">
+            <label>Wachtwoord (optioneel)</label>
+            <input type="text" name="wachtwoord" placeholder="Auto-genereren">
+          </div>
+        </div>
+        <button type="submit" class="btn-primary">Toewijzen</button>
+      </form>
+    </div>
+
+    <h2>Toegewezen examens</h2>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Kandidaat</th>
+          <th>Examen</th>
+          <th>Code</th>
+          <th>Status</th>
+          <th>Score</th>
+          <th>Fraud</th>
+          <th>Acties</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% kandidaten.forEach(ke => { %>
+          <tr>
+            <td><%= ke.kandidaat_naam %></td>
+            <td><%= ke.examen_titel %></td>
+            <td><code><%= ke.inlogcode %></code></td>
+            <td>
+              <span class="badge 
+                <%= ke.status === 'bezig' ? 'badge-warning' : ke.status === 'beeindigd' ? 'badge-success' : 'badge-info' %>">
+                <%= ke.status %>
+              </span>
+            </td>
+            <td>
+              <% if (ke.score_percentage !== null) { %>
+                <%= ke.score_percentage %>% 
+                <span class="badge <%= ke.geslaagd ? 'badge-success' : 'badge-danger' %>">
+                  <%= ke.geslaagd ? '✓' : '✗' %>
+                </span>
+              <% } else { %>-<% } %>
+            </td>
+            <td>
+              <% if (ke.fraud_count > 0) { %>
+                <span class="badge badge-danger"><%= ke.fraud_count %>x</span>
+              <% } else { %>-<% } %>
+            </td>
+            <td class="actions">
+              <% if (ke.status === 'beeindigd') { %>
+                <form action="/admin/kandidaat/reset/<%= ke.id %>" method="POST" style="display:inline">
+                  <button type="submit" class="btn-small btn-warning" data-confirm="Reset dit examen?">Reset</button>
+                </form>
+              <% } %>
+              <form action="/admin/kandidaat/verwijder/<%= ke.id %>" method="POST" style="display:inline">
+                <button type="submit" class="btn-small btn-danger" data-confirm="Verwijderen?">Verwijder</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TAB 2: Nieuwe Kandidaat -->
+  <div id="tab-aanmaken" class="tab-content">
+    <div class="toewijzen-form">
+      <h2>Nieuwe kandidaat aanmaken</h2>
+      <form action="/admin/kandidaat/aanmaken" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Naam *</label>
+            <input type="text" name="naam" required placeholder="Volledige naam">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="optioneel">
+          </div>
+          <div class="form-group">
+            <label>Wachtwoord *</label>
+            <input type="text" name="wachtwoord" required placeholder="Wachtwoord">
+          </div>
+        </div>
+        <button type="submit" class="btn-primary">Kandidaat Aanmaken</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TAB 3: Alle Kandidaten -->
+  <div id="tab-overzicht" class="tab-content">
+    <h2>Alle kandidaten</h2>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Naam</th>
+          <th>Email</th>
+          <th>Examens</th>
+          <th>Acties</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% alleKandidaten.forEach(k => { %>
+          <tr>
+            <td><%= k.naam %></td>
+            <td><%= k.email || '-' %></td>
+            <td><%= k.examens_count %></td>
+            <td>
+              <form action="/admin/kandidaat/user-verwijder/<%= k.id %>" method="POST" style="display:inline">
+                <button type="submit" class="btn-small btn-danger" data-confirm="Verwijderen?">Verwijder</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<style>
+.tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 2px solid var(--border); }
+.tab-btn { padding: 12px 24px; background: none; border: none; cursor: pointer; font-weight: 600; color: var(--text-light); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-btn:hover { color: var(--primary); }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+</style>

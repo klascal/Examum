@@ -1,0 +1,59 @@
+<div class="admin-dashboard">
+  <h1>Admin Dashboard</h1>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number"><%= stats.examens %></div>
+      <div class="stat-label">Examens</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number"><%= stats.kandidaten %></div>
+      <div class="stat-label">Kandidaten</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number"><%= stats.docenten %></div>
+      <div class="stat-label">Docenten</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number"><%= stats.actief %></div>
+      <div class="stat-label">Actief</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number"><%= stats.afgerond %></div>
+      <div class="stat-label">Afgerond</div>
+    </div>
+  </div>
+
+  <div class="admin-nav">
+    <a href="/admin/kandidaten" class="btn-nav">👥 Kandidaten</a>
+    <a href="/admin/docenten" class="btn-nav">🧑‍🏫 Docenten</a>
+    <a href="/admin/examens" class="btn-nav">📚 Examens</a>
+    <a href="/docent" class="btn-nav">✏️ Nakijken</a>
+  </div>
+
+  <h2>Recente Resultaten</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Kandidaat</th>
+        <th>Examen</th>
+        <th>Score</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% recenteResultaten.forEach(r => { %>
+        <tr>
+          <td><%= r.kandidaat_naam %></td>
+          <td><%= r.examen_titel %></td>
+          <td><%= r.score_percentage %>%</td>
+          <td>
+            <span class="badge <%= r.geslaagd ? 'badge-success' : 'badge-danger' %>">
+              <%= r.geslaagd ? 'Geslaagd' : 'Gezakt' %>
+            </span>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

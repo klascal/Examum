@@ -1,0 +1,111 @@
+<div class="inzien-page">
+  <h1>Examen Inzien</h1>
+  <h2><%= examen.titel %></h2>
+
+  <div class="inzien-summary">
+    Score: <strong><%= resultaat.score_percentage %>%</strong> 
+    (<%= resultaat.goed %>/<%= resultaat.totaal_vragen %>)
+    <span class="badge <%= resultaat.geslaagd ? 'badge-success' : 'badge-danger' %>">
+      <%= resultaat.geslaagd ? 'Geslaagd' : 'Gezakt' %>
+    </span>
+  </div>
+
+  <div class="vragen-lijst">
+    <% vragen.forEach((vraag, idx) => { %>
+      <div class="vraag-review 
+        <%= vraag.is_info ? 'info-slide' : '' %>
+        <%= !vraag.is_info && vraag.is_correct === 1 ? 'correct' : '' %>
+        <%= !vraag.is_info && vraag.is_correct === 0 && !vraag.isOpen ? 'fout' : '' %>
+        <%= vraag.isOpen && vraag.gegeven_antwoord ? 'open-beantwoord' : '' %>">
+
+        <div class="vraag-header">
+          <span class="vraag-nummer"><%= idx + 1 %></span>
+          <% if (vraag.is_info) { %>
+            <span class="badge badge-info">Info slide</span>
+          <% } else if (vraag.isOpen) { %>
+            <span class="badge badge-warning">Open vraag</span>
+            <% if (vraag.gegeven_antwoord) { %>
+              <span class="badge badge-success">Beantwoord</span>
+            <% } else { %>
+              <span class="badge badge-danger">Niet beantwoord</span>
+            <% } %>
+          <% } else if (vraag.is_correct === 1) { %>
+            <span class="badge badge-success">✓ Goed</span>
+          <% } else if (vraag.is_correct === 0) { %>
+            <span class="badge badge-danger">✗ Fout</span>
+          <% } else { %>
+            <span class="badge badge-warning">Niet beantwoord</span>
+          <% } %>
+        </div>
+
+        <p class="vraag-tekst"><%= vraag.vraag_tekst %></p>
+
+        <% if (vraag.isOpen && vraag.gegeven_antwoord) { %>
+          <div class="open-antwoord-review">
+            <strong>Jouw antwoord:</strong>
+            <div class="antwoord-tekst"><%= vraag.gegeven_antwoord %></div>
+            <small class="beoordeling-hint">Dit antwoord wordt later door de docent beoordeeld.</small>
+          </div>
+        <% } %>
+
+        <% if (!vraag.is_info && !vraag.isOpen) { %>
+          <div class="opties-review">
+            <% vraag.opties.forEach(optie => { %>
+              <div class="optie-review 
+                <%= optie.is_correct ? 'optie-correct' : '' %> 
+                <%= vraag.gegeven_antwoord === optie.label ? 'optie-gekozen' : '' %>">
+                <span class="optie-label"><%= optie.label %></span>
+                <span class="optie-tekst"><%= optie.tekst %></span>
+                <% if (optie.is_correct) { %><span class="correct-mark">✓ Correct</span><% } %>
+                <% if (vraag.gegeven_antwoord === optie.label && !optie.is_correct) { %><span class="wrong-mark">✗ Jouw keuze</span><% } %>
+              </div>
+            <% }) %>
+          </div>
+
+          <% if (vraag.gegeven_antwoord) { %>
+            <p class="jouw-antwoord">
+              Jouw antwoord: <strong><%= vraag.gegeven_antwoord %></strong>
+              <% if (vraag.correct_label && vraag.correct_label !== vraag.gegeven_antwoord) { %>
+                | Correct antwoord: <strong><%= vraag.correct_label %></strong>
+              <% } %>
+            </p>
+          <% } %>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="inzien-actions">
+    <a href="/examen/resultaat" class="btn-secondary">← Terug naar resultaat</a>
+    <a href="/logout" class="btn-secondary">Uitloggen</a>
+  </div>
+</div>
+
+<style>
+.open-antwoord-review {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-top: 12px;
+}
+.antwoord-tekst {
+  margin-top: 8px;
+  padding: 12px;
+  background: white;
+  border-radius: var(--radius);
+  border-left: 3px solid var(--primary);
+  white-space: pre-wrap;
+}
+.beoordeling-hint {
+  display: block;
+  margin-top: 8px;
+  color: var(--warning);
+}
+.open-beantwoord {
+  border-left-color: var(--warning) !important;
+}
+.info-slide {
+  border-left-color: var(--info) !important;
+  background: #ebf8ff;
+}
+</style>

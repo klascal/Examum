@@ -1,0 +1,39 @@
+<div class="resultaat-page">
+  <div class="resultaat-card">
+    <h1>Examen Resultaat</h1>
+    <h2><%= examen.titel %></h2>
+
+    <div
+      class="resultaat-score <%= resultaat.geslaagd ? 'geslaagd' : 'gezakt' %>"
+    >
+      <div class="score-percentage"><%= resultaat.score_percentage %>%</div>
+      <div class="score-label">
+        <%= resultaat.geslaagd ? 'Geslaagd!' : 'Gezakt' %>
+      </div>
+    </div>
+
+    <div class="resultaat-details">
+      <div class="detail-item">
+        <span class="detail-label">Goed:</span>
+        <span class="detail-value correct"
+          ><%= resultaat.goed %> / <%= resultaat.totaal_vragen %></span
+        >
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Fout:</span>
+        <span class="detail-value wrong"
+          ><%= resultaat.totaal_vragen - resultaat.goed %></span
+        >
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Minimale score:</span>
+        <span class="detail-value"><%= examen.min_score || 70 %>%</span>
+      </div>
+    </div>
+
+    <div class="resultaat-actions">
+      <a href="/examen/inzien" class="btn-primary">Bekijk antwoorden</a>
+      <a href="/logout" class="btn-secondary">Uitloggen</a>
+    </div>
+  </div>
+</div>

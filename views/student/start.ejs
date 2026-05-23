@@ -1,0 +1,52 @@
+<div class="examen-start">
+  <div class="start-card">
+    <h1><%= examen.titel %></h1>
+    <% if (examen.beschrijving) { %>
+      <p class="beschrijving"><%= examen.beschrijving %></p>
+    <% } %>
+
+    <div class="examen-info">
+      <div class="info-item">
+        <span class="info-label">Meerkeuze vragen:</span>
+        <span class="info-value"><%= aantalVragen - aantalOpen %> vragen</span>
+      </div>
+      <% if (aantalOpen > 0) { %>
+        <div class="info-item">
+          <span class="info-label">Open vragen:</span>
+          <span class="info-value"><%= aantalOpen %> vragen</span>
+        </div>
+      <% } %>
+      <% if (aantalInfo > 0) { %>
+        <div class="info-item">
+          <span class="info-label">Info slides:</span>
+          <span class="info-value"><%= aantalInfo %></span>
+        </div>
+      <% } %>
+      <div class="info-item">
+        <span class="info-label">Tijdslimiet:</span>
+        <span class="info-value"><%= assignment.tijdlimiet || examen.tijdlimiet || 45 %> minuten</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Minimale score:</span>
+        <span class="info-value"><%= examen.min_score || 70 %>%</span>
+      </div>
+    </div>
+
+    <div class="start-waarschuwing">
+      <h3>Belangrijk</h3>
+      <ul>
+        <li>Zorg dat je ongestoord kunt werken</li>
+        <li>Verlaat het examenvenster niet</li>
+        <li>Gebruik geen F12, Ctrl+U, of andere shortcuts</li>
+        <li>Je kunt het examen maar 1 keer maken</li>
+        <% if (aantalOpen > 0) { %>
+          <li><strong>Open vragen worden later door de docent beoordeeld</strong></li>
+        <% } %>
+      </ul>
+    </div>
+
+    <form action="/examen/start" method="POST">
+      <button type="submit" class="btn-start">Start Examen</button>
+    </form>
+  </div>
+</div>

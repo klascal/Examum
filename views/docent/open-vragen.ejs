@@ -1,0 +1,161 @@
+<div class="docent-open-vragen">
+  <h1>Open Vragen Nakijken</h1>
+  <h2><%= examen.titel %></h2>
+
+  <% if (locals.success) { %>
+    <div class="alert alert-success"><%= success %></div>
+  <% } %>
+
+  <% if (openVragen.length === 0) { %>
+    <div class="empty-state">
+      <p>Geen open vragen gevonden voor dit examen.</p>
+    </div>
+  <% } else { %>
+    <div class="open-vragen-lijst">
+      <% 
+      // Groepeer per vraag
+      const grouped = {};
+      openVragen.forEach(v => {
+        if (!grouped[v.vraag_id]) grouped[v.vraag_id] = { vraag: v, antwoorden: [] };
+        grouped[v.vraag_id].antwoorden.push(v);
+      });
+      %>
+
+      <% Object.values(grouped).forEach((group, idx) => { %>
+        <div class="vraag-beoordeling">
+          <h3>Vraag <%= group.vraag.volgorde || idx + 1 %>: <%= group.vraag.vraag_tekst %></h3>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Kandidaat</th>
+                <th>Antwoord</th>
+                <th>Beoordeling</th>
+                <th>Actie</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% group.antwoorden.forEach(a => { %>
+                <tr>
+                  <td><%= a.kandidaat_naam %></td>
+                  <td class="antwoord-cel">
+                    <div class="antwoord-tekst"><%= a.gegeven_antwoord || '(geen antwoord)' %></div>
+                  </td>
+                  <td>
+                    <% if (a.beoordeling) { %>
+                      <span class="badge badge-success">✓ Beoordeeld</span>
+                      <div class="score-display">Score: <%= a.beoordeling.score %>/1</div>
+                      <% if (a.beoordeling.feedback) { %>
+                        <div class="feedback-tekst">"<%= a.beoordeling.feedback %>"</div>
+                      <% } %>
+                    <% } else { %>
+                      <span class="badge badge-warning">⏳ Te beoordelen</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <form action="/docent/beoordeel" method="POST" class="beoordel-form">
+                      <input type="hidden" name="antwoord_id" value="<%= a.antwoord_id %>">
+                      <input type="hidden" name="examen_id" value="<%= examen.id %>">
+
+                      <div class="score-selector">
+                        <label class="score-option">
+                          <input type="radio" name="score" value="1" <%= a.beoordeling && a.beoordeling.score == 1 ? 'checked' : '' %> required>
+                          <span class="score-box correct">✓ Goed</span>
+                        </label>
+                        <label class="score-option">
+                          <input type="radio" name="score" value="0" <%= a.beoordeling && a.beoordeling.score == 0 ? 'checked' : '' %> required>
+                          <span class="score-box wrong">✗ Fout</span>
+                        </label>
+                      </div>
+
+                      <div class="form-group">
+                        <input type="text" name="feedback" placeholder="Feedback (optioneel)" 
+                          value="<%= a.beoordeling ? a.beoordeling.feedback || '' : '' %>">
+                      </div>
+
+                      <button type="submit" class="btn-small btn-primary">Opslaan</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <a href="/docent" class="btn-secondary">← Terug naar dashboard</a>
+</div>
+
+<style>
+.docent-open-vragen { max-width: 1200px; margin: 0 auto; }
+.vraag-beoordeling {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.vraag-beoordeling h3 {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+}
+.antwoord-cel {
+  max-width: 300px;
+}
+.antwoord-tekst {
+  background: var(--bg);
+  padding: 12px;
+  border-radius: var(--radius);
+  white-space: pre-wrap;
+  font-size: 0.9375rem;
+}
+.score-display {
+  font-weight: 700;
+  margin-top: 4px;
+}
+.feedback-tekst {
+  font-style: italic;
+  color: var(--text-light);
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+.beoordel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.score-selector {
+  display: flex;
+  gap: 8px;
+}
+.score-option input {
+  display: none;
+}
+.score-box {
+  display: block;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid var(--border);
+}
+.score-box.correct {
+  color: var(--success);
+}
+.score-box.wrong {
+  color: var(--danger);
+}
+.score-option input:checked + .score-box {
+  border-color: currentColor;
+  background: var(--bg);
+}
+.empty-state {
+  text-align: center;
+  padding: 48px;
+  color: var(--text-light);
+}
+</style>

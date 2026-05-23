@@ -1,0 +1,159 @@
+<div class="examen-page"
+     data-vraag-nr="<%= vraagNr %>"
+     data-totaal="<%= totaalVragen %>"
+     data-vraag-id="<%= vraag.id %>"
+     data-over-sec="<%= overSec %>">
+
+  <!-- Anti-fraud overlay -->
+  <div id="fraud-overlay" class="fraud-overlay" style="display:none">
+    <div class="fraud-message">
+      <h2>Waarschuwing</h2>
+      <p id="fraud-text">Het verlaten van het examenvenster is gedetecteerd. Dit wordt gelogd.</p>
+      <button id="fraud-overlay-sluit" class="btn-primary">Doorgaan met examen</button>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="examen-header-bar">
+    <div class="examen-header-left">
+      <span class="examen-titel"><%= examen.titel %></span>
+    </div>
+    <div class="examen-header-center">
+      <div class="timer" id="timer">--:--</div>
+      <div class="timer-label">resterende tijd</div>
+    </div>
+    <div class="examen-header-right">
+      <span class="vraag-counter">Vraag <%= vraagNr %> van <%= totaalVragen %></span>
+      <span class="fraud-indicator" id="fraud-indicator" style="display:none">⚠️</span>
+    </div>
+  </header>
+
+  <div class="examen-body">
+    <!-- Linker kolom (65%) -->
+    <div class="examen-main">
+      <% if (vraag.afbeelding_url) { %>
+        <div class="vraag-afbeelding">
+          <img src="<%= vraag.afbeelding_url %>" alt="Vraag afbeelding" loading="lazy">
+        </div>
+      <% } %>
+
+      <div class="vraag-content">
+        <div class="vraag-meta">
+          <% if (vraag.is_info) { %>
+            <span class="badge badge-info">Info slide</span>
+          <% } else if (isOpen) { %>
+            <span class="badge badge-warning">Open vraag</span>
+          <% } else { %>
+            <span class="badge badge-primary">Meerkeuze vraag</span>
+          <% } %>
+        </div>
+        <h2 class="vraag-tekst"><%= vraag.vraag_tekst %></h2>
+      </div>
+
+      <% if (vraag.is_info) { %>
+        <div class="info-slide-message">
+          <p>Dit is een informatieve slide. Klik op "Volgende" om door te gaan.</p>
+        </div>
+      <% } else if (isOpen) { %>
+        <!-- OPEN VRAAG – geen inline handlers -->
+        <div class="open-antwoord">
+          <label for="open-antwoord">Typ je antwoord:</label>
+          <textarea id="open-antwoord" rows="6" placeholder="Typ hier je antwoord..."><%= gegevenAntwoord || '' %></textarea>
+          <small class="open-hint">Je antwoord wordt automatisch opgeslagen. Het wordt later door de docent beoordeeld.</small>
+        </div>
+      <% } else { %>
+        <!-- MULTIPLE CHOICE – geen inline handlers -->
+        <div class="antwoord-opties">
+          <% opties.forEach(function(optie) { %>
+            <label class="optie-label <%= gegevenAntwoord === optie.label ? 'selected' : '' %>" data-label="<%= optie.label %>">
+              <input type="radio" name="antwoord" value="<%= optie.label %>"
+                <%= gegevenAntwoord === optie.label ? 'checked' : '' %>>
+              <span class="optie-letter"><%= optie.label %></span>
+              <span class="optie-tekst"><%= optie.tekst %></span>
+            </label>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Rechter kolom (35%) -->
+    <div class="examen-sidebar">
+      <div class="overzicht-card">
+        <h3>Overzicht</h3>
+        <div class="overzicht-grid">
+          <% vragen.forEach(function(v, idx) { %>
+            <a href="/examen/vraag/<%= idx + 1 %>"
+               class="vraag-nummer
+               <%= idx + 1 === vraagNr ? 'huidig' : '' %>
+               <%= beantwoordMap[v.id] ? 'beantwoord' : '' %>
+               <%= v.is_info ? 'info' : '' %>
+               <%= !beantwoordMap[v.id] && idx + 1 !== vraagNr ? 'niet-beantwoord' : '' %>">
+              <% if (v.is_info) { %>ℹ️<% } else { %><%= idx + 1 %><% } %>
+            </a>
+          <% }); %>
+        </div>
+
+        <div class="overzicht-legend">
+          <div class="legend-item"><span class="legend-box huidig"></span><span>Huidig</span></div>
+          <div class="legend-item"><span class="legend-box beantwoord"></span><span>Beantwoord</span></div>
+          <div class="legend-item"><span class="legend-box niet-beantwoord"></span><span>Open</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom navigatie -->
+  <div class="examen-nav">
+    <% if (vraagNr > 1) { %>
+      <a href="/examen/vraag/<%= vraagNr - 1 %>" class="btn-nav btn-nav-vorige">← Vorige</a>
+    <% } else { %>
+      <span class="btn-nav disabled">← Vorige</span>
+    <% } %>
+
+    <button id="btn-bookmark" class="btn-bookmark">🔖</button>
+
+    <% if (vraagNr === totaalVragen) { %>
+      <button id="btn-inleveren" class="btn-inleveren">INLEVEREN</button>
+    <% } else { %>
+      <a href="/examen/vraag/<%= vraagNr + 1 %>" class="btn-nav btn-nav-volgende">Volgende →</a>
+    <% } %>
+  </div>
+</div>
+
+<style>
+.vraag-meta { margin-bottom: 12px; }
+.open-antwoord {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.open-antwoord label {
+  font-weight: 600;
+  color: var(--text);
+}
+.open-antwoord textarea {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+  transition: border-color 0.2s;
+}
+.open-antwoord textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+.open-hint {
+  color: var(--text-light);
+  font-size: 0.875rem;
+}
+.fraud-indicator {
+  color: var(--danger);
+  font-size: 1.25rem;
+  margin-left: 8px;
+  animation: pulse 1s infinite;
+}
+</style>

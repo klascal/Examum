@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title><%= title %> | ExamenSysteem</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <% if (typeof style !== 'undefined' && style) { %>
+    <%- style %>
+  <% } %>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main class="main-content">
+    <%- body %>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js"></script>
+  <% if (typeof script !== 'undefined' && script) { %>
+    <%- script %>
+  <% } %>
+</body>
+</html>

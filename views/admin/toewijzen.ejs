@@ -1,0 +1,23 @@
+<div class="admin-toewijzen">
+  <div class="success-card">
+    <h1>✅ Kandidaat Toegewezen</h1>
+
+    <div class="code-display">
+      <div class="code-item">
+        <label>Toegangscode:</label>
+        <code class="big-code"><%= inlogcode %></code>
+      </div>
+      <div class="code-item">
+        <label>Wachtwoord:</label>
+        <code class="big-code"><%= wachtwoord %></code>
+      </div>
+    </div>
+
+    <p class="hint">Deel deze codes met de kandidaat. De toegangscode is hoofdlettergevoelig.</p>
+
+    <div class="actions">
+      <a href="/admin/kandidaten" class="btn-primary">Terug naar overzicht</a>
+      <button id="btn-print" class="btn-secondary">Print</button>
+    </div>
+  </div>
+</div>

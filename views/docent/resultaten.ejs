@@ -1,0 +1,32 @@
+<div class="docent-resultaten">
+  <h1>Resultaten: <%= examen.titel %></h1>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Kandidaat</th>
+        <th>Score</th>
+        <th>Status</th>
+        <th>Gestart</th>
+        <th>Beeindigd</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% resultaten.forEach(r => { %>
+        <tr>
+          <td><%= r.kandidaat_naam %></td>
+          <td><%= r.score_percentage %>%</td>
+          <td>
+            <span class="badge <%= r.geslaagd ? 'badge-success' : 'badge-danger' %>">
+              <%= r.geslaagd ? 'Geslaagd' : 'Gezakt' %>
+            </span>
+          </td>
+          <td><%= r.gestart ? new Date(r.gestart).toLocaleString('nl-NL') : '-' %></td>
+          <td><%= r.beeindigd ? new Date(r.beeindigd).toLocaleString('nl-NL') : '-' %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <a href="/docent" class="btn-secondary">← Terug</a>
+</div>

@@ -1,0 +1,28 @@
+<div class="docent-dashboard">
+  <h1>Docent Dashboard</h1>
+
+  <h2>Mijn Examens</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Titel</th>
+        <th>Vragen</th>
+        <th>Kandidaten</th>
+        <th>Acties</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% examens.forEach(e => { %>
+        <tr>
+          <td><%= e.titel %></td>
+          <td><%= e.aantal_vragen %></td>
+          <td><%= e.aantal_kandidaten %></td>
+          <td>
+            <a href="/docent/resultaten/<%= e.id %>" class="btn-small btn-primary">Resultaten</a>
+            <a href="/docent/open-vragen/<%= e.id %>" class="btn-small btn-warning">Open Vragen</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

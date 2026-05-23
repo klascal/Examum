@@ -1,0 +1,84 @@
+<div class="admin-docenten">
+  <h1>Docenten Beheer</h1>
+
+  <% if (locals.error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+  <% if (locals.success) { %>
+    <div class="alert alert-success"><%= success %></div>
+  <% } %>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="aanmaken">Nieuwe Docent</button>
+    <button class="tab-btn" data-tab="overzicht">Alle Docenten</button>
+  </div>
+
+  <!-- TAB 1: Aanmaken -->
+  <div id="tab-aanmaken" class="tab-content active">
+    <div class="toewijzen-form">
+      <h2>Nieuwe docent aanmaken</h2>
+      <form action="/admin/docent/aanmaken" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Naam *</label>
+            <input type="text" name="naam" placeholder="Volledige naam" required>
+          </div>
+          <div class="form-group">
+            <label>E-mailadres * <small>(wordt gebruikt als inlognaam)</small></label>
+            <input type="email" name="email" placeholder="docent@school.nl" required>
+          </div>
+          <div class="form-group">
+            <label>Wachtwoord *</label>
+            <input type="text" name="wachtwoord" placeholder="Minimaal 6 tekens" required>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary">Docent aanmaken</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TAB 2: Overzicht -->
+  <div id="tab-overzicht" class="tab-content">
+    <h2>Alle Docenten</h2>
+    <% if (docenten.length === 0) { %>
+      <p class="empty-state">Nog geen docenten aangemaakt.</p>
+    <% } else { %>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Naam</th>
+            <th>E-mail</th>
+            <th>Examens</th>
+            <th>Status</th>
+            <th>Aangemaakt</th>
+            <th>Acties</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% docenten.forEach(d => { %>
+            <tr>
+              <td><%= d.naam %></td>
+              <td><%= d.email || '-' %></td>
+              <td><%= d.examens_count %></td>
+              <td>
+                <span class="badge <%= d.actief ? 'badge-success' : 'badge-danger' %>">
+                  <%= d.actief ? 'Actief' : 'Inactief' %>
+                </span>
+              </td>
+              <td><%= new Date(d.created_at).toLocaleDateString('nl-NL') %></td>
+              <td>
+                <form action="/admin/docent/verwijder/<%= d.id %>" method="POST"
+                      onsubmit="return confirm('Docent verwijderen?')">
+                  <button type="submit" class="btn-small btn-danger"
+                    <%= d.examens_count > 0 ? 'title="Let op: docent heeft examens"' : '' %>>
+                    Verwijderen
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>

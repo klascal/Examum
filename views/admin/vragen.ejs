@@ -1,0 +1,137 @@
+<div class="admin-vragen">
+  <h1>Vragen: <%= examen.titel %></h1>
+
+  <div class="nieuw-vraag-form">
+    <h2>Vraag toevoegen</h2>
+    <form action="/admin/vraag/toevoegen" method="POST">
+      <input type="hidden" name="examen_id" value="<%= examen.id %>">
+
+      <div class="form-group">
+        <label>Vraag type *</label>
+        <div class="type-selector">
+          <label class="type-option">
+            <input type="radio" name="vraag_type" value="multiple_choice" checked>
+            <span class="type-box">
+              <strong>Multiple Choice</strong>
+              <small>Kandidaat kiest uit A/B/C/D</small>
+            </span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="vraag_type" value="open">
+            <span class="type-box">
+              <strong>Open Vraag</strong>
+              <small>Kandidaat typt antwoord (docent beoordeelt)</small>
+            </span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="vraag_type" value="info">
+            <span class="type-box">
+              <strong>Info Slide</strong>
+              <small>Geen antwoord nodig, alleen informatie</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Vraag tekst / Info tekst *</label>
+        <textarea name="vraag_tekst" rows="3" required placeholder="Typ hier de vraag of informatie..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Volgorde</label>
+          <input type="number" name="volgorde" value="<%= vragen.length + 1 %>">
+        </div>
+        <div class="form-group">
+          <label>Afbeelding URL (optioneel)</label>
+          <input type="text" name="afbeelding_url" placeholder="https://...">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary">Toevoegen</button>
+    </form>
+  </div>
+
+  <h2>Vragen (<%= vragen.length %>)</h2>
+  <div class="vragen-lijst">
+    <% vragen.forEach((v, idx) => { %>
+      <div class="vraag-card">
+        <div class="vraag-header">
+          <span class="vraag-nummer">#<%= idx + 1 %></span>
+          <% if (v.is_info) { %>
+            <span class="badge badge-info">ℹ️ Info Slide</span>
+          <% } else if (v.aantal_opties > 0) { %>
+            <span class="badge badge-primary">🔘 Multiple Choice (<%= v.aantal_opties %> opties)</span>
+          <% } else { %>
+            <span class="badge badge-warning">✏️ Open Vraag</span>
+          <% } %>
+
+          <form action="/admin/vraag/verwijder/<%= v.id %>" method="POST" style="display:inline; margin-left: auto;">
+            <button type="submit" class="btn-small btn-danger" data-confirm="Vraag verwijderen?">Verwijder</button>
+          </form>
+        </div>
+
+        <p class="vraag-tekst"><%= v.vraag_tekst %></p>
+
+        <% if (v.afbeelding_url) { %>
+          <img src="<%= v.afbeelding_url %>" alt="" class="vraag-thumb">
+        <% } %>
+
+        <% if (!v.is_info && v.aantal_opties === 0) { %>
+          <div class="open-hint">
+            <small>⚠️ Dit is een open vraag. Het antwoord wordt niet automatisch nagekeken.</small>
+          </div>
+        <% } %>
+
+        <% if (v.aantal_opties > 0) { %>
+          <a href="/admin/vraag/opties/<%= v.id %>?examen_id=<%= examen.id %>" class="btn-small btn-primary">Bewerk opties</a>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+
+  <a href="/admin/examens" class="btn-secondary">← Terug naar examens</a>
+</div>
+
+<style>
+.type-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+.type-option {
+  cursor: pointer;
+}
+.type-option input {
+  display: none;
+}
+.type-box {
+  display: block;
+  padding: 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  transition: all 0.2s;
+}
+.type-option input:checked + .type-box {
+  border-color: var(--primary);
+  background: #ebf8ff;
+}
+.type-box strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.type-box small {
+  color: var(--text-light);
+  font-size: 0.75rem;
+}
+.open-hint {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #fffaf0;
+  border-radius: var(--radius);
+  color: var(--warning);
+}
+</style>

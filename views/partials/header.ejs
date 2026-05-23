@@ -1,0 +1,11 @@
+<header class="site-header">
+  <div class="header-container">
+    <a href="/" class="logo">ExamenSysteem</a>
+    <% if (locals.user) { %>
+      <nav class="header-nav">
+        <span class="user-name"><%= user.naam %></span>
+        <a href="/logout" class="btn-logout">Uitloggen</a>
+      </nav>
+    <% } %>
+  </div>
+</header>

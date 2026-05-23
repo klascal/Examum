@@ -1,0 +1,60 @@
+<div class="admin-examens">
+  <h1>Examens</h1>
+
+  <div class="nieuw-examen-form">
+    <h2>Nieuw examen</h2>
+    <form action="/admin/examen/aanmaken" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Titel *</label>
+          <input type="text" name="titel" required>
+        </div>
+        <div class="form-group">
+          <label>Tijdslimiet (min)</label>
+          <input type="number" name="tijdlimiet" value="45" min="1">
+        </div>
+        <div class="form-group">
+          <label>Min. score (%)</label>
+          <input type="number" name="min_score" value="70" min="0" max="100">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Beschrijving</label>
+        <textarea name="beschrijving" rows="2"></textarea>
+      </div>
+      <button type="submit" class="btn-primary">Aanmaken</button>
+    </form>
+  </div>
+
+  <h2>Alle examens</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Titel</th>
+        <th>Vragen</th>
+        <th>Tijd</th>
+        <th>Min. score</th>
+        <th>Status</th>
+        <th>Acties</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% examens.forEach(e => { %>
+        <tr>
+          <td><%= e.titel %></td>
+          <td><%= e.aantal_vragen %></td>
+          <td><%= e.tijdlimiet %> min</td>
+          <td><%= e.min_score %>%</td>
+          <td>
+            <span class="badge <%= e.actief ? 'badge-success' : 'badge-danger' %>">
+              <%= e.actief ? 'Actief' : 'Inactief' %>
+            </span>
+          </td>
+          <td>
+            <a href="/admin/vragen/<%= e.id %>" class="btn-small btn-primary">Vragen</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
